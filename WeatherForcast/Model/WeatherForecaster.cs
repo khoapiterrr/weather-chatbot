@@ -7,9 +7,9 @@ namespace WeatherForcast.Model
 {
     public class WeatherForecaster
     {
+        public string Link { get; set; }
+        public string ForecastCurrent { get; set; }
         public string Address { get; set; }
-        public float latitude { get; set; }
-        public float Longitude { get; set; }
         public string TemperatureC { get; set; }
         public string TemperatureF { get; set; }
         public string Image { get; set; }

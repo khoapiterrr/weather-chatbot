@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Entity.ViewWeatherHistoryCrawl>
+
+@{
+    ViewData["Title"] = "Lịch sử crawl web";
+    Layout = "~/Views/Share/_Layout.cshtml";
+}
+
+<div class="jumbotron">
+    <h1>Lịch sử người dùng crawl web</h1>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered" id="tbTable">
+        <thead class="text-md-center">
+            <tr>
+                <th>
+                    Đia chỉ mạng
+                </th>
+                <th>
+                    Thời gian
+                </th>
+                <th>
+                    Thành phố
+                </th>
+                <th>
+                    Nhiệt độ
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IpAddress)
+                    </td>
+
+                    <td>
+                        @item.CreatedDate.ToString("dd.MM.yyyy hh:mm:ss")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.City)
+                    </td>
+                    <td>
+                        @Html.Raw(item.Temperature)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<!-- Data table plugin-->
+<!--<script type="text/javascript">$('#tbTable').DataTable();</script>-->

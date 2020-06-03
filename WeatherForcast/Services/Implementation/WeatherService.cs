@@ -10,15 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using WeatherForcast.Model;
 using Entity;
+using DataMigration;
 
 namespace WeatherForcast.Services.Implementation
 {
     public class WeatherService : IWeatherService
     {
         private readonly string _weatherApiKey;
+        private readonly DataMigrationContext _context;
 
-        public WeatherService()
+        public WeatherService(DataMigrationContext context)
         {
+            _context = context;
             _weatherApiKey = "23916b46baafe10baf75a899f2197cec";
         }
 
@@ -43,7 +46,7 @@ namespace WeatherForcast.Services.Implementation
             {
                 var document = htmlWeb.Load(link);
                 var weatherDetail = document.DocumentNode.Descendants("div").FirstOrDefault(node => node.Attributes.Contains("id") && node.Attributes["id"].Value == "current_conditions_detail").Descendants("tr").ToList();
-                var weatherDetail1 = document.DocumentNode.SelectSingleNode("//div[@id=current_conditions_detail]");
+                //var weatherDetail1 = document.DocumentNode.SelectSingleNode("//div[@id=current_conditions_detail]");
                 foreach (var item in weatherDetail)
                 {
                     var td = item.ChildNodes.Where(x => x.Name == "td").ToList();
@@ -58,12 +61,12 @@ namespace WeatherForcast.Services.Implementation
                 catch (Exception)
                 {
                 }
-
+                var current = document.DocumentNode.Descendants("div").FirstOrDefault(node => node.Attributes.Contains("id") && node.Attributes["id"].Value == "current-conditions").ChildNodes.ToList();
+                var curentpanel_heading = current.FirstOrDefault(node => node.Attributes.Contains("class") && node.Attributes["class"].Value == "panel-heading");
+                objReturn.Address = curentpanel_heading.Descendants("h2").FirstOrDefault().InnerText;
                 objReturn.TemperatureF = temperatures.FirstOrDefault(node => node.Attributes.Contains("class") && node.Attributes["class"].Value == "myforecast-current-lrg").InnerText;
                 objReturn.TemperatureC = temperatures.FirstOrDefault(node => node.Attributes.Contains("class") && node.Attributes["class"].Value == "myforecast-current-sm").InnerText;
-                //dia chi
-                var addr = document.DocumentNode.Descendants("div").FirstOrDefault(node => node.Attributes.Contains("id") && node.Attributes["id"].Value == "getfcst-head");
-
+                objReturn.ForecastCurrent = temperatures.FirstOrDefault(node => node.Attributes.Contains("class") && node.Attributes["class"].Value == "myforecast-current").InnerText;
                 //weather
                 var listForecaseShort = document.DocumentNode.Descendants("ul").FirstOrDefault(node => node.Attributes.Contains("id") && node.Attributes["id"].Value == "seven-day-forecast-list").ChildNodes.ToList();
                 foreach (var item in listForecaseShort)
@@ -77,12 +80,14 @@ namespace WeatherForcast.Services.Implementation
                     obj.Description = data.ChildNodes.Descendants("img").FirstOrDefault(node => node.Attributes.Contains("alt")).Attributes["alt"].Value;
                     objReturn.Weathers.Add(obj);
                 }
+
+                objReturn.Link = link;
             }
             catch (Exception)
             {
                 return null;
             }
-
+            SaveHistoryCrawl(objReturn);
             return objReturn;
         }
 
@@ -102,6 +107,25 @@ namespace WeatherForcast.Services.Implementation
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        public void SaveHistoryCrawl(WeatherForecaster obj)
+        {
+            try
+            {
+                _context.ViewWeatherHistoryCrawl.Add(new ViewWeatherHistoryCrawl
+                {
+                    City = obj.Address,
+                    CreatedDate = DateTime.UtcNow,
+                    IpAddress = Common.CommonHelper.getIpAccess(),
+                    Temperature = obj.TemperatureC + " __ " + obj.TemperatureF,
+                });
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

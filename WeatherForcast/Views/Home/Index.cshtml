@@ -28,16 +28,11 @@
     </h2>
     <br />
     <div id="current-conditions" class="panel panel-default col-md-12">
-        <h3>Hiện tại</h3>
+        <h3 id="address"></h3>
         <div class="panel-body col-md-12">
             <div class="row">
-
                 <!-- Graphic and temperatures -->
                 <div id="current_conditions-summary" class="pull-left col-md-4">
-                    <img src="https://forecast.weather.gov/newimages/large/novc.png" style="float:left">
-                    <p class="myforecast-current">Overcast</p>
-                    <p class="myforecast-current-lrg">41°F</p>
-                    <p class="myforecast-current-sm">5°C</p>
                 </div>
                 <div class="pull-left col-md-8">
                     <table>
@@ -65,14 +60,22 @@
         <tbody id="weather-detail">
         </tbody>
     </table>
+    <a href=""></a>
+    <h5 id="link-crawl"></h5>
 </div>
 @section scripts {
     <script type="text/javascript">
+        $(function () {
+            LoadData()
+        })
         function LoadData() {
             const link = $('#txtLink').val()
             let data = {
                 link:link
             }
+            $('#current_conditions-summary').html('');
+            $('#current_conditions_detail').html('');
+            $('#weather-detail').html('')
             $.ajax({
                 url: '@Url.Action("GetDataFromLink","Weather")',
                 type: 'POST',
@@ -106,6 +109,14 @@
                                 </tr>
                             `)
                         })
+                        $('#address').html(data.address)
+                        $('#current_conditions-summary').html(`
+                            <img src="${data.image}" style="float:left">
+                            <p class="myforecast-current">${data.forecastCurrent}</p>
+                            <p class="myforecast-current-lrg">${data.temperatureF}</p>
+                            <p class="myforecast-current-sm">${data.temperatureC}</p>
+                        `);
+                        $('#link-crawl').html(`Dữ liệu được crawl từ <a href="${data.link}" target="_blank">tại đây</a> `)
                     }
                 },
                 error: function (result, textStatus, errorThrown) {
