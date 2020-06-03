@@ -1,0 +1,120 @@
+﻿@model WeatherForcast.Model.WeatherForecaster
+@{
+    ViewData["Title"] = "Dự báo thời tiết";
+    Layout = "~/Views/Share/_Layout.cshtml";
+}
+
+<style>
+    img {
+        width: 100px;
+        height: 100px;
+        margin-right: 1em;
+    }
+</style>
+<div class="jumbotron">
+    <h1>Chương trình lấy dữ liệu thời tiết</h1>
+</div>
+
+<div class="row">
+
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" id="txtLink" placeholder="Link forecast.weather " aria-label="Recipient's username" aria-describedby="button-addon2">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" onclick="LoadData()" id="button-addon2">Get Data From Link</button>
+        </div>
+    </div>
+    <h2 class="col-md-12 text-center text-danger">
+        Kết quả tìm kiếm:
+    </h2>
+    <br />
+    <div id="current-conditions" class="panel panel-default col-md-12">
+        <h3>Hiện tại</h3>
+        <div class="panel-body col-md-12">
+            <div class="row">
+
+                <!-- Graphic and temperatures -->
+                <div id="current_conditions-summary" class="pull-left col-md-4">
+                    <img src="https://forecast.weather.gov/newimages/large/novc.png" style="float:left">
+                    <p class="myforecast-current">Overcast</p>
+                    <p class="myforecast-current-lrg">41°F</p>
+                    <p class="myforecast-current-sm">5°C</p>
+                </div>
+                <div class="pull-left col-md-8">
+                    <table>
+                        <tbody id="current_conditions_detail">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /current-conditions-body -->
+        </div>
+        <!-- /Current Conditions -->
+    </div>
+    <h3>
+        Chi tiết dự báo thời tiết
+    </h3>
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th style="width:10%" scope="col">#</th>
+                <th style="width:10%" scope="col">Time</th>
+                <th style="width:10%" scope="col">temperature</th>
+                <th style="width:70%" scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody id="weather-detail">
+        </tbody>
+    </table>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        function LoadData() {
+            const link = $('#txtLink').val()
+            let data = {
+                link:link
+            }
+            $.ajax({
+                url: '@Url.Action("GetDataFromLink","Weather")',
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        alert('Trang web không phù hợp để xem thời tiết')
+                    } else {
+                         localStorage.key['weather'] = data;
+
+                        const objWeatherDeatil = Object.entries(data.weatherDetail)
+                        objWeatherDeatil.forEach(([key, value]) => {
+                            $('#current_conditions_detail').append(`
+                                <tr>
+                                    <td class="text-right"><b>${key}</b></td>
+                                    <td>${value}</td>
+                                </tr>
+                            `)
+                        });
+                        data.weathers.map(e => {
+                            $('#weather-detail').append(`
+                                <tr>
+                                    <th scope="row">
+                                        <img src="${e.image}" alt="${e.description}" />
+                                    </th>
+                                    <td>${e.time}</td>
+                                    <td>${e.temp}</td>
+                                    <td>${e.description}</td>
+                                </tr>
+                            `)
+                        })
+                    }
+                },
+                error: function (result, textStatus, errorThrown) {
+                    debugger
+                    //swal("Có lỗi", "Error:" + errorThrown + " - " + textStatus + " - " + result, "error");
+                    alert("Có lỗi", "Error:" + errorThrown + " - " + textStatus + " - " + result, "error")
+                },
+            });
+        }
+    </script>
+
+}
