@@ -51,7 +51,7 @@ namespace WeatherForcast
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddControllersAsServices();
             //Meseger fb chat bot
-            services.AddMessengerClient("EAAJUQJULnJgBALVPH4ZBoEeVm5OW1QZCuBWMQFwzoLNS0lizVuazGuktZB5lekAaQqWU17e8nkbSw5s7iPt3s6IPiCp7QZAhymfLx0KjBanW5JFvnakfvspP1qByrACBMw2VheoZBE1Cj44B6s5wNTPCZAjziw796H2UHZAaKA9xNHjdhQzTIqwV0MEBI6Pt1AZD");
+            services.AddMessengerClient("EAAJUQJULnJgBAKZC6o88cNTeJHXNAIBgqhaQXuv2zLgFI6hTZAU15hb7c7Dvn4QiCquE1289xe5lyK7XtL6mwhbWIoT34yXzIPSGPPal81LafpZBPpvjtmPlU955j98GavtTNq3VrPc1l2s6ZCuKTlwiOxuRYIAGWYBhmZCIYmnNNax6l0AWmTRtMfaMmPioZD");
             //services.AddMessengerClient("EAAJUQJULnJgBABdZCj4THk1PbrI9n8eKOs7QWRoCUvaGpuac8LddZA0hb0ER0y4pUMNQVKNC32xWMFsAMi3nDnP7ZB5neocxrGv73OqGsZAyxj7skjseTrKZCBSZAjsSsTJawR9k0J0Q3bSkwPKs5QLI2kyPWnKNpC0Kxt4Ogxg5Sm0G5qGOdWAZC5HrcXLTSYZD");
 
             //auto injection

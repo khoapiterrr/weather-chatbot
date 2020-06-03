@@ -88,12 +88,12 @@ namespace WeatherForcast.api
                                         {
                                             var response = new MessengerMessage { Text = $"Dự báo thời tiết hôm nay {DateTime.UtcNow.ToString("dd.MM.yyyy H:mm:ss")}, khu vực {weather.name} NĐ là: {weather.main.temp}, NĐ cao nhất: {weather.main.temp_max}, thấp nhất: {weather.main.temp_max} có{weather.weather[0].description} <3 From Khoapiterrr with love :* " };
                                             await messageSender.SendAsync(response, new MessengerUser { Id = senderId });
-                                            //RecurringJob.AddOrUpdate(senderId,
-                                            //                () => messageSender.SendAsync(response, new MessengerUser { Id = senderId }),
-                                            //                Cron.Hourly);
-                                            //var jobId = BackgroundJob.Schedule(
-                                            //        () => RecurringJob.RemoveIfExists(senderId),
-                                            //        TimeSpan.FromDays(1));
+                                            RecurringJob.AddOrUpdate(senderId,
+                                                            () => messageSender.SendAsync(response, new MessengerUser { Id = senderId }),
+                                                            Cron.Hourly);
+                                            var jobId = BackgroundJob.Schedule(
+                                                    () => RecurringJob.RemoveIfExists(senderId),
+                                                    TimeSpan.FromDays(1));
                                         }
                                         else
                                         {
